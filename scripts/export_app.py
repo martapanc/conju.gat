@@ -24,11 +24,18 @@ def main() -> None:
             "fam": p["famiglia"],
             "nome": p["nome"],
             "colore": p["colore"],
+            "forma": p["forma"],
+            "ple": p["pieno"],
             "esempio": p["esempio"],
             "sig": p["signature"],
             "n": p["n_verbi"],
             "varianti": [
-                {"esempio": v["esempio"], "sig": v["signature"], "n": v["n_verbi"]}
+                {
+                    "esempio": v["esempio"],
+                    "sig": v["signature"],
+                    "n": v["n_verbi"],
+                    "formes": v["forme_esempio"],
+                }
                 for v in p.get("varianti", [])
             ],
         }

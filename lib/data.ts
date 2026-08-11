@@ -15,13 +15,32 @@ export type Family =
   | "pura-3"
   | "irregolare";
 
-export type Variant = { esempio: string; sig: string[]; n: number };
+export type Variant = {
+  esempio: string;
+  sig: string[];
+  n: number;
+  formes: (string | null)[];
+};
+
+export type Shape =
+  | "cercle"
+  | "quadrat"
+  | "triangle"
+  | "rombe"
+  | "creu"
+  | "estrella"
+  | "lluna"
+  | "barra";
 
 export type Pattern = {
   id: string;
   fam: Family;
   nome: string;
   colore: string;
+  /** shape of the mark — carries the subtype that flat colour cannot */
+  forma: Shape;
+  /** filled or outlined: one more bit of identity */
+  ple: boolean;
   esempio: string;
   sig: string[];
   n: number;
@@ -42,13 +61,29 @@ export type Dataset = {
 };
 
 export const FAMILY_LABEL: Record<Family, string> = {
-  "regular-1": "1a regolare",
-  "ortho-1": "1a ortografica",
-  segona: "2a coniugazione",
+  "regular-1": "1a conjugació regular",
+  "ortho-1": "1a amb alternança ortogràfica",
+  segona: "2a conjugació",
   "incoativa-3": "3a incoativa",
   "pura-3": "3a pura",
-  irregolare: "irregolare",
+  irregolare: "irregulars",
 };
+
+/**
+ * The palette lives in the data as flat hex, but the page has two themes and
+ * black on black is invisible. Resolve every stored colour to its CSS token so
+ * the marks follow the theme instead of fighting it.
+ */
+const TOKEN: Record<string, string> = {
+  "#F6BE00": "var(--groc)",
+  "#D8232A": "var(--vermell)",
+  "#1B3FBB": "var(--blau)",
+  "#141414": "var(--ink)",
+};
+
+export function colour(hex: string): string {
+  return TOKEN[hex.toUpperCase()] ?? hex;
+}
 
 let cache: Promise<Dataset> | null = null;
 

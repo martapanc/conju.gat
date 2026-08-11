@@ -1,10 +1,18 @@
-"""Assign a colour to every present-tense cluster.
+"""Assign a mark to every present-tense cluster.
 
-Design rules agreed up front:
-  - the huge regular class stays NEUTRAL, so colour means "something to watch"
-  - one hue per mechanism family, shades within it for the orthographic triggers
-  - a handful of vivid accents reserved for the memorise-one-by-one irregulars
-  - never colour alone: every pattern also carries a readable name
+Miró's vocabulary: flat primaries plus black, no gradients, no shades. That
+gives four colours for 51 patterns, so colour carries the *conjugation* and the
+shape of the mark carries the *subtype*:
+
+    colour  groc = 1a ortogràfica · vermell = 2a · blau = 3a · negre = la resta
+    shape   cercle / quadrat / triangle / rombe / creu / estrella / lluna
+    fill    ple or buit — a second bit, so each hue holds fourteen marks
+
+Two readings are reserved and never reused:
+    quadrat buit negre  = 1a regular — 64% of verbs, nothing to remember
+    ple negre           = the ten irregulars, each learnt on its own
+
+Shape survives colour blindness and photocopying, which shades never did.
 """
 
 from __future__ import annotations
@@ -19,35 +27,39 @@ PERSONS = ("1s", "2s", "3s", "1p", "2p", "3p")
 
 REGULAR_1 = ("o", "es", "a", "em", "eu", "en")
 
-# One hue per conjugation: 1a amber, 2a red, 3a teal/blue. Violet is left free
-# for `ser`, the verb that earns the most distinct tint on the page.
+GROC = "#F6BE00"
+VERMELL = "#D8232A"
+BLAU = "#1B3FBB"
+NEGRE = "#141414"
+
+SHAPES = ["cercle", "quadrat", "triangle", "rombe", "creu", "estrella", "lluna"]
+
+# 7 shapes × 2 fills = 14 distinct marks per hue. Patterns past that are the
+# deep tail (three verbs or fewer) and share one honest "cas a part" mark —
+# a silent collision would be a bug; a declared one is a category.
+TAIL = "barra"
+
+# Verbs learnt one by one: black, filled, each with its own shape.
 ACCENTS = {
-    "ser": ("#8E44AD", "ser / ésser"),
-    "anar": ("#E0662A", "anar"),
-    "fer": ("#C9A227", "fer"),
-    "estar": ("#4AA05A", "estar"),
-    "tenir": ("#5566CC", "tenir / venir"),
-    "poder": ("#17A2A2", "poder"),
-    "dir": ("#C0399B", "dir"),
-    "veure": ("#3D7BD6", "veure"),
-    "saber": ("#8A6D3B", "saber"),
-    "voler": ("#D1506B", "voler"),
+    "ser": "ser / ésser",
+    "anar": "anar",
+    "fer": "fer",
+    "estar": "estar",
+    "tenir": "tenir / venir",
+    "poder": "poder",
+    "dir": "dir",
+    "veure": "veure",
+    "saber": "saber",
+    "voler": "voler",
 }
 
 FAMILIES = {
-    "regular-1": {"nom": "1a regolare", "color": "#8A8F98"},
-    "ortho-1": {"nom": "1a, alternanza ortografica", "color": "#D98324"},
-    "incoativa-3": {"nom": "3a incoativa (-eix-)", "color": "#1F9E88"},
-    "pura-3": {"nom": "3a pura", "color": "#2A6DA8"},
-    "segona": {"nom": "2a coniugazione", "color": "#C2413A"},
-}
-
-# Shades within a family, applied by cluster size rank.
-SHADES = {
-    "ortho-1": ["#D98324", "#B8651A", "#E8A33D", "#F0C173", "#9C5210"],
-    "incoativa-3": ["#1F9E88", "#157A69", "#4FBFAA"],
-    "pura-3": ["#2A6DA8", "#1B4D7A", "#5C97C8", "#8FBBDD"],
-    "segona": ["#C2413A", "#9B2E28", "#D4685F", "#E39189", "#AE3730", "#7F221D"],
+    "regular-1": ("1a conjugació regular", NEGRE),
+    "ortho-1": ("1a conjugació, alternança ortogràfica", GROC),
+    "segona": ("2a conjugació", VERMELL),
+    "incoativa-3": ("3a conjugació incoativa", BLAU),
+    "pura-3": ("3a conjugació pura", BLAU),
+    "irregolare": ("irregular", NEGRE),
 }
 
 # Preferred exemplars — a pattern is remembered by a verb you actually use.
@@ -76,59 +88,71 @@ def classify(signature: tuple[str, ...], cls: str) -> str:
     return "segona"
 
 
+COLOUR_OF = {
+    "regular-1": NEGRE,
+    "irregolare": NEGRE,
+    "ortho-1": GROC,
+    "segona": VERMELL,
+    "incoativa-3": BLAU,
+    "pura-3": BLAU,
+}
+
+# Reserved and never reused: the 64% that needs no colour at all.
+RESERVED = ("quadrat", False)
+
+
+def mark_sequence(colour: str) -> list[tuple[str, bool]]:
+    """Marks for one hue, filled first then outline, most legible first."""
+    seq = [(s, True) for s in SHAPES] + [(s, False) for s in SHAPES]
+    if colour == NEGRE:
+        seq = [m for m in seq if m != RESERVED]
+    return seq
+
+
 def main() -> None:
     dataset = json.loads((OUT / "present.json").read_text(encoding="utf-8"))
     clusters = json.loads((OUT / "clusters.json").read_text(encoding="utf-8"))
 
-    used_shade = collections.Counter()
-    patterns, verb_index = [], {}
-
-    # Accent clusters first, so they win over their family colour.
-    accent_for: dict[int, tuple[str, str]] = {}
+    accent_for: dict[int, str] = {}
     for i, c in enumerate(clusters):
-        for verb, (color, label) in ACCENTS.items():
+        for verb, label in ACCENTS.items():
             if verb in c["verbs"] and i not in accent_for:
-                accent_for[i] = (color, label)
+                accent_for[i] = label
+
+    patterns, verb_index = [], {}
 
     for i, c in enumerate(clusters):
         members = c["verbs"]
         signature = tuple(c["signature"])
         cls = collections.Counter(dataset[v]["classe"] for v in members).most_common(1)[0][0]
-        family = classify(signature, cls)
+        family = "irregolare" if i in accent_for else classify(signature, cls)
         exemplar = pick_exemplar(members)
 
-        if i in accent_for:
-            color, label = accent_for[i]
-            family, nom = "irregolare", f"irregolare: {label}"
-        else:
-            shades = SHADES.get(family)
-            if shades:
-                color = shades[min(used_shade[family], len(shades) - 1)]
-                used_shade[family] += 1
-            else:
-                color = FAMILIES[family]["color"]
-            nom = f"{FAMILIES[family]['nom']} · tipo {exemplar}"
+        nom = (
+            f"irregular: {accent_for[i]}"
+            if family == "irregolare"
+            else f"{FAMILIES[family][0]} · tipus {exemplar}"
+        )
 
-        # Accent variants inside one pattern (fer/refer, aprèn/entén): same
-        # mechanism, same colour, but the drill still needs the exact spelling.
         varianti = []
-        for var in c.get("varianti", []):
-            if len(c.get("varianti", [])) < 2:
-                break
-            v_ex = pick_exemplar(var["verbs"])
-            varianti.append({
-                "signature": var["signature"],
-                "esempio": v_ex,
-                "forme_esempio": [dataset[v_ex]["forme"].get(p) for p in PERSONS],
-                "n_verbi": len(var["verbs"]),
-            })
+        if len(c.get("varianti", [])) > 1:
+            for var in c["varianti"]:
+                v_ex = pick_exemplar(var["verbs"])
+                varianti.append({
+                    "signature": var["signature"],
+                    "esempio": v_ex,
+                    "forme_esempio": [dataset[v_ex]["forme"].get(p) for p in PERSONS],
+                    "n_verbi": len(var["verbs"]),
+                })
 
         pid = f"p{i:02d}"
         patterns.append({
             "id": pid,
             "famiglia": family,
             "nome": nom,
-            "colore": color,
+            "colore": COLOUR_OF[family],
+            "forma": None,  # allocated below, once every size is known
+            "pieno": False,
             "signature": list(signature),
             "esempio": exemplar,
             "forme_esempio": [dataset[exemplar]["forme"].get(p) for p in PERSONS],
@@ -139,20 +163,50 @@ def main() -> None:
         for v in members:
             verb_index[v] = {"pattern": pid, "forme": [dataset[v]["forme"].get(p) for p in PERSONS]}
 
+    # Allocate marks per hue, biggest pattern first, so the shapes you meet
+    # most often are the simplest ones.
+    for colour in (NEGRE, GROC, VERMELL, BLAU):
+        pool = mark_sequence(colour)
+        members = sorted(
+            (p for p in patterns if p["colore"] == colour),
+            key=lambda p: -p["n_verbi"],
+        )
+        i = 0
+        for p in members:
+            if p["famiglia"] == "regular-1":
+                p["forma"], p["pieno"] = RESERVED
+                continue
+            if i < len(pool):
+                p["forma"], p["pieno"] = pool[i]
+                i += 1
+            else:
+                p["forma"], p["pieno"] = TAIL, False
+                p["cas_a_part"] = True
+
     (OUT / "patterns.json").write_text(json.dumps(patterns, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUT / "verbs.json").write_text(json.dumps(verb_index, ensure_ascii=False, indent=1), encoding="utf-8")
 
     total = sum(p["n_verbi"] for p in patterns)
-    print(f"{len(patterns)} pattern, {total} verbi\n")
     by_family = collections.Counter()
     for p in patterns:
         by_family[p["famiglia"]] += p["n_verbi"]
-    print("copertura per famiglia:")
+    print(f"{len(patterns)} pattern, {total} verbi\n")
     for fam, n in by_family.most_common():
         print(f"  {fam:14s} {n:5d}  {100*n/total:5.1f}%")
-    print("\ntop 20 pattern:")
-    for p in patterns[:20]:
-        print(f"  {p['colore']}  {p['n_verbi']:5d}  {p['esempio']:12s} "
+
+    # A mark must never repeat: colour+shape+fill is the whole identity.
+    marks = collections.Counter((p["colore"], p["forma"], p["pieno"]) for p in patterns)
+    clashes = {m: n for m, n in marks.items() if n > 1}
+    print(f"\nsegni distinti: {len(marks)} su {len(patterns)} pattern")
+    if clashes:
+        print("segni ripetuti (distinti solo dal nome):")
+        for (col, shape, fill), n in sorted(clashes.items(), key=lambda kv: -kv[1]):
+            print(f"  {col} {shape:9s} {'ple' if fill else 'buit':5s} ×{n}")
+
+    print("\ntop 12:")
+    for p in patterns[:12]:
+        print(f"  {p['colore']} {p['forma']:9s} {'ple' if p['pieno'] else 'buit':5s} "
+              f"{p['n_verbi']:5d}  {p['esempio']:12s} "
               f"{' '.join(f or '—' for f in p['forme_esempio'])}")
 
 

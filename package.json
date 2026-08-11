@@ -9,8 +9,7 @@
     "lint": "eslint",
     "data:fetch": "bash scripts/fetch_sources.sh",
     "data:build": "python3 scripts/build.py && python3 scripts/palette.py && python3 scripts/export_app.py",
-    "data:preview": "python3 scripts/preview.py",
-    "data": "npm run data:build && npm run data:preview"
+    "data": "npm run data:build"
   },
   "dependencies": {
     "next": "16.3.0",

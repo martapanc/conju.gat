@@ -1,14 +1,16 @@
 // conju.gat — offline-first for the verb data, network-first for the app shell.
 // The point is that it works on the metro.
 
-const VERSION = "conjugat-v1";
+const VERSION = "conjugat-v2";
 const DATA = ["/data/patterns.json", "/data/verbs.json", "/data/deck.json"];
+// Every route is static, so the whole app can be pinned for the metro.
+const ROUTES = ["/", "/consulta", "/digues", "/escriu", "/ajustos"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(VERSION)
-      .then((cache) => cache.addAll(["/", ...DATA]))
+      .then((cache) => cache.addAll([...ROUTES, ...DATA]))
       .then(() => self.skipWaiting())
       .catch(() => self.skipWaiting()),
   );
