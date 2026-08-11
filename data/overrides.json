@@ -1,0 +1,107 @@
+{
+  "_nota": "Correzioni al dataset verbecc, catalano centrale. Tre meccanismi: 'templates' definisce nuovi pattern (convenzione Verbiste: '-' iniziale = togli un carattere dalla radice), 'assign' rimappa un verbo a un template, 'forms' impone le forme esplicite.",
+
+  "templates": {
+    "prendre-compost": {
+      "suffix": "dre",
+      "indicatiu.present": ["c", "s", "--èn", "em", "eu", "en"],
+      "_esempio": "aprendre -> aprenc, aprens, aprèn, aprenem, apreneu, aprenen"
+    },
+    "treure-compost": {
+      "suffix": "eure",
+      "indicatiu.present": ["ec", "eus", "eu", "aiem", "aieu", "euen"],
+      "_esempio": "treure -> trec, treus, treu, traiem, traieu, treuen"
+    },
+    "neixer-compost": {
+      "suffix": "éixer",
+      "indicatiu.present": ["eixo", "eixes", "eix", "aixem", "aixeu", "eixen"],
+      "_esempio": "néixer -> neixo, neixes, neix, naixem, naixeu, neixen"
+    },
+    "empenyer-compost": {
+      "suffix": "ènyer",
+      "indicatiu.present": ["enyo", "enys", "eny", "enyem", "enyeu", "enyen"],
+      "_esempio": "empènyer -> empenyo, empenys, empeny, empenyem, empenyeu, empenyen"
+    },
+    "torcer-compost": {
+      "suffix": "òrcer",
+      "indicatiu.present": ["orço", "orces", "orç", "orcem", "orceu", "orcen"],
+      "_esempio": "tòrcer -> torço, torces, torç, torcem, torceu, torcen"
+    }
+  },
+
+  "assign": {
+    "aprendre": "prendre-compost",
+    "aprehendre": "prendre-compost",
+    "comprendre": "prendre-compost",
+    "corprendre": "prendre-compost",
+    "desaprendre": "prendre-compost",
+    "dependre": "prendre-compost",
+    "despendre": "prendre-compost",
+    "desprendre": "prendre-compost",
+    "defendre": "prendre-compost",
+    "emprendre": "prendre-compost",
+    "malprendre": "prendre-compost",
+    "mamprendre": "prendre-compost",
+    "ofendre": "prendre-compost",
+    "reprendre": "prendre-compost",
+    "salprendre": "prendre-compost",
+    "sobreprendre": "prendre-compost",
+    "sorprendre": "prendre-compost",
+    "suspendre": "prendre-compost",
+    "ullprendre": "prendre-compost",
+
+    "treure": "treure-compost",
+    "abstreure": "treure-compost",
+    "atreure": "treure-compost",
+    "bestreure": "treure-compost",
+    "contreure": "treure-compost",
+    "detreure": "treure-compost",
+    "distreure": "treure-compost",
+    "extreure": "treure-compost",
+    "retreure": "treure-compost",
+    "retrotreure": "treure-compost",
+    "sostreure": "treure-compost",
+    "jeure": "treure-compost",
+    "ajeure": "treure-compost",
+
+    "néixer": "neixer-compost",
+    "renéixer": "neixer-compost",
+    "sobrenéixer": "neixer-compost",
+    "péixer": "neixer-compost",
+
+    "atènyer": "empenyer-compost",
+    "constrènyer": "empenyer-compost",
+    "destrènyer": "empenyer-compost",
+    "empènyer": "empenyer-compost",
+    "espènyer": "empenyer-compost",
+    "estrènyer": "empenyer-compost",
+    "restrènyer": "empenyer-compost",
+
+    "tòrcer": "torcer-compost",
+    "colltòrcer": "torcer-compost",
+    "contòrcer": "torcer-compost",
+    "destòrcer": "torcer-compost",
+    "distòrcer": "torcer-compost",
+    "estòrcer": "torcer-compost",
+    "retòrcer": "torcer-compost",
+
+    "apeixir": "serv:ir",
+    "assortir": "serv:ir",
+    "atemorir": "serv:ir"
+  },
+
+  "forms": {
+    "ser":    ["sóc", "ets", "és", "som", "sou", "són"],
+    "ésser":  ["sóc", "ets", "és", "som", "sou", "són"],
+    "saber":  ["sé", "saps", "sap", "sabem", "sabeu", "saben"],
+    "voler":  ["vull", "vols", "vol", "volem", "voleu", "volen"],
+    "tindre": ["tinc", "tens", "té", "tenim", "teniu", "tenen"],
+    "caber":  ["cabo", "caps", "cap", "cabem", "cabeu", "caben"],
+    "caler":  [null, null, "cal", null, null, "calen"],
+    "desfer": ["desfaig", "desfàs", "desfà", "desfem", "desfeu", "desfan"],
+    "malveure": ["malveig", "malveus", "malveu", "malveiem", "malveieu", "malveuen"],
+    "aparer": ["aparo", "apars", "apar", "aparem", "apareu", "aparen"],
+    "adir":    ["adic", "adius", "adiu", "adiem", "adieu", "adiuen"],
+    "adir-se": ["adic", "adius", "adiu", "adiem", "adieu", "adiuen"]
+  }
+}

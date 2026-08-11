@@ -1,0 +1,28 @@
+{
+  "name": "conjugat",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3341",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "data:fetch": "bash scripts/fetch_sources.sh",
+    "data:build": "python3 scripts/build.py && python3 scripts/palette.py && python3 scripts/export_app.py",
+    "data:preview": "python3 scripts/preview.py",
+    "data": "npm run data:build && npm run data:preview"
+  },
+  "dependencies": {
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "typescript": "^5"
+  }
+}
