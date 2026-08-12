@@ -260,6 +260,7 @@ button {
 .paradigm li {
   display: flex;
   align-items: baseline;
+  min-height: 2.5rem;
   gap: var(--s4);
   padding: var(--s2) 0;
   border-bottom: 1px solid var(--hair);
@@ -284,6 +285,10 @@ button {
   flex: 1;
   min-width: 0;
   word-break: break-word;
+  /* Empty cells reserve a filled cell's height, so the table doesn't shift
+     downwards as the paradigm fills in. */
+  min-height: 1.5em;
+  line-height: 1.5;
 }
 
 .p-form .caret {
@@ -355,10 +360,23 @@ button {
   align-items: start;
 }
 
+/* Grid items default to min-width:auto, which lets an unbreakable-content
+   descendant (a scrollable row of verb forms, say) blow the whole track past
+   the viewport even though it has its own overflow-x:auto. Without this the
+   body scrolls sideways on every page that renders a .prow list. */
+.page > * {
+  min-width: 0;
+}
+
 @media (max-width: 900px) {
   .page {
     grid-template-columns: 1fr;
     gap: var(--s4);
+  }
+  /* The sticky title only earns its keep beside a tall scrolling column;
+     stacked single-column it would float over the very content below it. */
+  .page > aside h1 {
+    position: static;
   }
 }
 
@@ -509,10 +527,20 @@ button {
   margin: 0 0 var(--s4);
 }
 
-table.paradigm-full {
-  width: 100%;
-  border-collapse: collapse;
+/* Defensive: a two-column persona/forma table shouldn't ever need to scroll,
+   but if a future tense adds a longer inflected form, it scrolls sideways
+   here instead of pushing the whole page off the edge of the screen. */
+.table-scroll {
+  overflow-x: auto;
   margin-bottom: var(--s5);
+}
+
+table.paradigm-full {
+  /* min-width, not width: lets the table grow past its scroll container
+     instead of squeezing cells when content genuinely needs more room. */
+  min-width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
 }
 
 table.paradigm-full caption {
@@ -676,6 +704,10 @@ table.paradigm-full td {
   text-decoration: none;
 }
 
+.wordmark {
+  flex: none;
+}
+
 .navlinks {
   list-style: none;
   display: flex;
@@ -685,11 +717,43 @@ table.paradigm-full td {
   font-family: var(--font-mono), monospace;
   font-size: var(--t-72);
   letter-spacing: 0.1em;
+  /* Never wrap: on a narrow screen the strip scrolls sideways instead of
+     breaking "digues-ho" across two lines and blowing out the bar's height. */
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* A hard clip mid-word ("dig|ues-ho") reads as broken; fade the edge
+     instead so a cut-off link reads as "more here", not as a bug. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--s2),
+    black calc(100% - var(--s2)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--s2),
+    black calc(100% - var(--s2)),
+    transparent
+  );
+}
+
+.navlinks::-webkit-scrollbar {
+  display: none;
+}
+
+.navlinks li {
+  flex: none;
 }
 
 .navlinks a {
+  display: block;
   color: var(--muted);
   padding: var(--s2) 0;
+  white-space: nowrap;
 }
 
 .navlinks a:hover {
@@ -699,6 +763,10 @@ table.paradigm-full td {
 .navlinks a[aria-current="page"] {
   color: var(--ink);
   box-shadow: inset 0 -2px 0 var(--ink);
+}
+
+.bar-right {
+  flex: none;
 }
 
 @media (max-width: 720px) {
@@ -712,7 +780,6 @@ table.paradigm-full td {
 }
 
 .page > aside h1 {
-  position: sticky;
   top: calc(var(--bar) + var(--s5));
 }
 
@@ -875,6 +942,10 @@ details.family[open] summary::after {
   align-items: start;
 }
 
+.compare > * {
+  min-width: 0;
+}
+
 @media (max-width: 800px) {
   .compare {
     grid-template-columns: 1fr;
@@ -936,7 +1007,6 @@ details.family[open] summary::after {
 
 .source-note {
   font-size: var(--t-72);
-  max-width: 58ch;
   padding-top: var(--s3);
   border-top: 1px solid var(--hair);
 }
@@ -946,4 +1016,94 @@ details.family[open] summary::after {
 .prow svg,
 .results button svg {
   align-self: center;
+}
+
+/* The shades are chosen for paper. On the dark ground they need a lift, and
+   one filter keeps marks and coloured endings in step. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mark,
+  :root:not([data-theme="light"]) .tone,
+  :root:not([data-theme="light"]) .swatch {
+    filter: brightness(1.25) saturate(1.05);
+  }
+}
+
+:root[data-theme="dark"] .mark,
+:root[data-theme="dark"] .tone,
+:root[data-theme="dark"] .swatch {
+  filter: brightness(1.25) saturate(1.05);
+}
+
+.greeting {
+  margin-top: var(--s5);
+  padding-top: var(--s4);
+  border-top: 1.5px solid var(--rule);
+}
+
+.greeting p {
+  margin: var(--s3) 0 0;
+  font-size: var(--t-83);
+  color: var(--muted);
+}
+
+.greeting b {
+  color: var(--ink);
+}
+
+/* The ten irregulars share no tone, so the legend shows a spread of them. */
+.rainbow {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  background: linear-gradient(
+    135deg,
+    #d84f89 0% 20%,
+    #e4a80f 20% 40%,
+    #3b8f4a 40% 60%,
+    #0f6ca6 60% 80%,
+    #814aac 80% 100%
+  );
+}
+
+.practice-links {
+  display: flex;
+  gap: var(--s2);
+  margin-bottom: var(--s5);
+}
+
+/* Links that act as buttons need the button's box, not the anchor's. */
+a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ---------- peu de pàgina ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--hair);
+  padding: var(--s3) var(--s4);
+  max-width: 68rem;
+  margin: 0 auto;
+}
+
+.site-footer p {
+  margin: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: var(--t-72);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-align: center;
+}
+
+.site-footer a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.site-footer a:hover {
+  color: var(--ink);
 }

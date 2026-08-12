@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   PERSONS,
   colour,
@@ -38,8 +40,16 @@ function liveFrom(forms: (string | null)[], from: number): number {
 type Round = { verb: string; index: number; cells: Cell[]; done: boolean };
 
 /** Building the round eagerly keeps setup out of an effect entirely. */
-function startRound(data: Dataset, progress: Progress, avoid?: string): Round {
-  const verb = nextVerb(data.deck, progress, avoid);
+function startRound(
+  data: Dataset,
+  progress: Progress,
+  avoid?: string,
+  pinned?: string,
+): Round {
+  const verb =
+    pinned && data.verbs.has(pinned)
+      ? pinned
+      : nextVerb(data.deck, progress, avoid);
   const row = data.verbs.get(verb) as VerbRow;
   return { verb, index: liveFrom(formsOf(row), 0), cells: blank(), done: false };
 }
@@ -47,13 +57,20 @@ function startRound(data: Dataset, progress: Progress, avoid?: string): Round {
 export default function Practice({
   data,
   mode,
+  /** ?v= — the verb you arrived to practise, used for the first round only */
+  initialVerb,
 }: {
   data: Dataset;
   mode: Mode;
+  initialVerb?: string | null;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [settings] = useSettings();
   const { progress, record } = useProgress();
-  const [round, setRound] = useState<Round>(() => startRound(data, progress));
+  const [round, setRound] = useState<Round>(() =>
+    startRound(data, progress, undefined, initialVerb ?? undefined),
+  );
   const input = useRef<HTMLInputElement>(null);
 
   const { verb, index, cells, done } = round;
@@ -92,6 +109,9 @@ export default function Practice({
 
   function advance(knew?: boolean) {
     if (knew !== undefined) record(verb, knew);
+    // The pinned verb is spent: drop it from the URL so the address keeps
+    // telling the truth about what's on screen.
+    if (initialVerb) router.replace(pathname);
     setRound(startRound(data, progress, verb));
   }
 
@@ -109,11 +129,16 @@ export default function Practice({
     <>
       <Nav
         right={
-          mode === "escriu" ? (
-            <span>
-              {Math.min(answered, live)}/{live}
-            </span>
-          ) : undefined
+          <>
+            {mode === "escriu" && (
+              <span>
+                {Math.min(answered, live)}/{live}
+              </span>
+            )}
+            <Link href={`/consulta?v=${encodeURIComponent(verb)}`}>
+              consulta&apos;l
+            </Link>
+          </>
         }
       />
 
@@ -194,9 +219,10 @@ export default function Practice({
                       <>
                         {stem}
                         <span
+                          className="tone"
                           style={{
                             color: settings.hint
-                              ? colour(pattern.colore)
+                              ? colour(pattern.text)
                               : undefined,
                           }}
                         >
@@ -235,9 +261,19 @@ export default function Practice({
               </button>
             )
           ) : finished ? (
-            <button className="btn solid" onClick={() => advance()}>
-              Següent verb
-            </button>
+            <>
+              {cells.some((c) => c.ok === false) && (
+                <Link
+                  className="btn"
+                  href={`/consulta?v=${encodeURIComponent(verb)}`}
+                >
+                  Estudia&apos;l
+                </Link>
+              )}
+              <button className="btn solid" onClick={() => advance()}>
+                Següent verb
+              </button>
+            </>
           ) : (
             <button
               className="btn solid"

@@ -22,25 +22,15 @@ export type Variant = {
   formes: (string | null)[];
 };
 
-export type Shape =
-  | "cercle"
-  | "quadrat"
-  | "triangle"
-  | "rombe"
-  | "creu"
-  | "estrella"
-  | "lluna"
-  | "barra";
-
 export type Pattern = {
   id: string;
   fam: Family;
   nome: string;
   colore: string;
-  /** shape of the mark — carries the subtype that flat colour cannot */
-  forma: Shape;
-  /** filled or outlined: one more bit of identity */
-  ple: boolean;
+  /** darkened variant of the family tone, legible as body text */
+  text: string;
+  /** outline instead of filled — reserved for the 1a regular */
+  buit: boolean;
   esempio: string;
   sig: string[];
   n: number;
@@ -75,9 +65,6 @@ export const FAMILY_LABEL: Record<Family, string> = {
  * the marks follow the theme instead of fighting it.
  */
 const TOKEN: Record<string, string> = {
-  "#F6BE00": "var(--groc)",
-  "#D8232A": "var(--vermell)",
-  "#1B3FBB": "var(--blau)",
   "#141414": "var(--ink)",
 };
 

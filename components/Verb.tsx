@@ -8,6 +8,7 @@ import {
   colour,
   type Dataset,
 } from "@/lib/data";
+import Link from "next/link";
 import Mark from "./Mark";
 
 /**
@@ -55,48 +56,63 @@ export default function Verb({
         {pattern.nome} · {pattern.n.toLocaleString("ca")} {pattern.n === 1 ? "verb" : "verbs"}
       </p>
 
-      <table className="paradigm-full">
-        <caption>present d&apos;indicatiu</caption>
-        <thead>
-          <tr>
-            <th scope="col">persona</th>
-            <th scope="col">forma</th>
-          </tr>
-        </thead>
-        <tbody>
-          {PERSONS.map((person, i) => {
-            const [stem, end] = splitForm(forms[i], sig[i] ?? "");
-            return (
-              <tr key={person}>
-                <th scope="row">{person}</th>
-                <td>
-                  {forms[i] ? (
-                    <>
-                      {stem}
-                      <span style={{ color: colour(pattern.colore) }}>{end}</span>
-                    </>
-                  ) : (
-                    <span className="muted">no existeix</span>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-
-      {pattern.varianti.length > 1 && (
+      <div className="table-scroll">
         <table className="paradigm-full">
-          <caption>mateix mecanisme, accent diferent</caption>
+          <caption>present d&apos;indicatiu</caption>
+          <thead>
+            <tr>
+              <th scope="col">persona</th>
+              <th scope="col">forma</th>
+            </tr>
+          </thead>
           <tbody>
-            {pattern.varianti.map((v) => (
-              <tr key={v.esempio}>
-                <th scope="row">{v.esempio}</th>
-                <td>{v.formes.filter(Boolean).join(" · ")}</td>
-              </tr>
-            ))}
+            {PERSONS.map((person, i) => {
+              const [stem, end] = splitForm(forms[i], sig[i] ?? "");
+              return (
+                <tr key={person}>
+                  <th scope="row">{person}</th>
+                  <td>
+                    {forms[i] ? (
+                      <>
+                        {stem}
+                        <span className="tone" style={{ color: colour(pattern.text) }}>
+                          {end}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="muted">no existeix</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+      </div>
+
+      <div className="practice-links">
+        <Link className="btn" href={`/escriu?v=${encodeURIComponent(verb)}`}>
+          Escriu-lo
+        </Link>
+        <Link className="btn" href={`/digues?v=${encodeURIComponent(verb)}`}>
+          Digues-lo
+        </Link>
+      </div>
+
+      {pattern.varianti.length > 1 && (
+        <div className="table-scroll">
+          <table className="paradigm-full">
+            <caption>mateix mecanisme, accent diferent</caption>
+            <tbody>
+              {pattern.varianti.map((v) => (
+                <tr key={v.esempio}>
+                  <th scope="row">{v.esempio}</th>
+                  <td>{v.formes.filter(Boolean).join(" · ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {siblings.length > 0 && (

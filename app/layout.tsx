@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Fragment_Mono, Inter_Tight } from "next/font/google";
+import Footer from "@/components/Footer";
 import ScrollTop from "@/components/ScrollTop";
 import { DataProvider } from "./providers";
 import "./globals.css";
@@ -55,6 +56,7 @@ export default function RootLayout({
       <body>
         <ScrollTop />
         <DataProvider>{children}</DataProvider>
+        <Footer />
         <script
           dangerouslySetInnerHTML={{
             __html: `if('serviceWorker'in navigator){addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}`,

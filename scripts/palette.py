@@ -1,18 +1,18 @@
-"""Assign a mark to every present-tense cluster.
+"""Assign a colour to every present-tense cluster.
 
-Miró's vocabulary: flat primaries plus black, no gradients, no shades. That
-gives four colours for 51 patterns, so colour carries the *conjugation* and the
-shape of the mark carries the *subtype*:
+Colour carries everything: one hue per conjugation, shades of it for the
+subtypes, and a rainbow for the ten irregulars.
 
-    colour  groc = 1a ortogràfica · vermell = 2a · blau = 3a · negre = la resta
-    shape   cercle / quadrat / triangle / rombe / creu / estrella / lluna
-    fill    ple or buit — a second bit, so each hue holds fourteen marks
+    buit (contorn)  1a regular — 64% of verbs, nothing to remember
+    groc            1a amb alternança ortogràfica
+    vermell         2a
+    blau            3a incoativa
+    verd aigua      3a pura
+    arc de Sant Martí   els deu irregulars, un to cadascun
 
-Two readings are reserved and never reused:
-    quadrat buit negre  = 1a regular — 64% of verbs, nothing to remember
-    ple negre           = the ten irregulars, each learnt on its own
-
-Shape survives colour blindness and photocopying, which shades never did.
+Each hue holds about six legible shades. Patterns past that are the deep tail
+(three verbs or fewer): they share the family's base shade and are told apart
+by name, never by colour alone.
 """
 
 from __future__ import annotations
@@ -27,19 +27,36 @@ PERSONS = ("1s", "2s", "3s", "1p", "2p", "3p")
 
 REGULAR_1 = ("o", "es", "a", "em", "eu", "en")
 
-GROC = "#F6BE00"
-VERMELL = "#D8232A"
-BLAU = "#1B3FBB"
 NEGRE = "#141414"
 
-SHAPES = ["cercle", "quadrat", "triangle", "rombe", "creu", "estrella", "lluna"]
+# Shades run light-to-dark within a hue, biggest pattern first, and stay above
+# a luminance floor so they survive the dark theme too.
+SHADES = {
+    "ortho-1": ["#F6BE00", "#C99400", "#FFD75E", "#A87F0A", "#FFE9A3"],
+    "segona": [
+        "#D8232A", "#8E1519", "#F0736B", "#A8443C",
+        "#F7ADA6", "#6E2320", "#D9598A", "#C0797A",
+    ],
+    "incoativa-3": ["#1B3FBB", "#12308F", "#5B79E8", "#97AAF2"],
+    "pura-3": ["#0E8A7D", "#0A5F56", "#3FBBAB", "#8AD8CC", "#17A392", "#04423C"],
+}
 
-# 7 shapes × 2 fills = 14 distinct marks per hue. Patterns past that are the
-# deep tail (three verbs or fewer) and share one honest "cas a part" mark —
-# a silent collision would be a bug; a declared one is a category.
-TAIL = "barra"
+# A tone each, chosen between the family hues so no irregular can be mistaken
+# for a conjugation.
+RAINBOW = {
+    "ser": "#7A3FA8",
+    "anar": "#E4640F",
+    "fer": "#9A7B1F",
+    "estar": "#3B8F4A",
+    "tenir": "#0F8FA6",
+    "poder": "#4A45C9",
+    "dir": "#B23C96",
+    "veure": "#2E9E6B",
+    "saber": "#8A5A34",
+    "voler": "#C7407A",
+}
 
-# Verbs learnt one by one: black, filled, each with its own shape.
+# Verbs learnt one by one, each with its own tone.
 ACCENTS = {
     "ser": "ser / ésser",
     "anar": "anar",
@@ -54,12 +71,12 @@ ACCENTS = {
 }
 
 FAMILIES = {
-    "regular-1": ("1a conjugació regular", NEGRE),
-    "ortho-1": ("1a conjugació, alternança ortogràfica", GROC),
-    "segona": ("2a conjugació", VERMELL),
-    "incoativa-3": ("3a conjugació incoativa", BLAU),
-    "pura-3": ("3a conjugació pura", BLAU),
-    "irregolare": ("irregular", NEGRE),
+    "regular-1": "1a conjugació regular",
+    "ortho-1": "1a conjugació, alternança ortogràfica",
+    "segona": "2a conjugació",
+    "incoativa-3": "3a conjugació incoativa",
+    "pura-3": "3a conjugació pura",
+    "irregolare": "irregular",
 }
 
 # Preferred exemplars — a pattern is remembered by a verb you actually use.
@@ -88,25 +105,28 @@ def classify(signature: tuple[str, ...], cls: str) -> str:
     return "segona"
 
 
-COLOUR_OF = {
-    "regular-1": NEGRE,
-    "irregolare": NEGRE,
-    "ortho-1": GROC,
-    "segona": VERMELL,
-    "incoativa-3": BLAU,
-    "pura-3": BLAU,
-}
-
-# Reserved and never reused: the 64% that needs no colour at all.
-RESERVED = ("quadrat", False)
+def _luminance(hex_colour: str) -> float:
+    r, g, b = (int(hex_colour[i : i + 2], 16) / 255 for i in (1, 3, 5))
+    f = lambda c: c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
 
 
-def mark_sequence(colour: str) -> list[tuple[str, bool]]:
-    """Marks for one hue, filled first then outline, most legible first."""
-    seq = [(s, True) for s in SHAPES] + [(s, False) for s in SHAPES]
-    if colour == NEGRE:
-        seq = [m for m in seq if m != RESERVED]
-    return seq
+def readable(hex_colour: str, ceiling: float = 0.28) -> str:
+    """Darken a tone until it holds as body text on paper.
+
+    A pale yellow is perfectly legible as a filled square and almost invisible
+    as a letter, so marks and text get different values of the same hue.
+    """
+    r, g, b = (int(hex_colour[i : i + 2], 16) for i in (1, 3, 5))
+    while _luminance(f"#{r:02x}{g:02x}{b:02x}") > ceiling and max(r, g, b) > 8:
+        r, g, b = (int(c * 0.92) for c in (r, g, b))
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def shade_for(family: str, rank: int) -> str:
+    """The rank-th shade of a family; the tail falls back to the base tone."""
+    shades = SHADES[family]
+    return shades[rank] if rank < len(shades) else shades[0]
 
 
 def main() -> None:
@@ -131,7 +151,7 @@ def main() -> None:
         nom = (
             f"irregular: {accent_for[i]}"
             if family == "irregolare"
-            else f"{FAMILIES[family][0]} · tipus {exemplar}"
+            else f"{FAMILIES[family]} · tipus {exemplar}"
         )
 
         varianti = []
@@ -150,9 +170,9 @@ def main() -> None:
             "id": pid,
             "famiglia": family,
             "nome": nom,
-            "colore": COLOUR_OF[family],
-            "forma": None,  # allocated below, once every size is known
-            "pieno": False,
+            "colore": NEGRE,  # assigned below, once every size is known
+            "text": NEGRE,
+            "buit": family == "regular-1",
             "signature": list(signature),
             "esempio": exemplar,
             "forme_esempio": [dataset[exemplar]["forme"].get(p) for p in PERSONS],
@@ -163,25 +183,34 @@ def main() -> None:
         for v in members:
             verb_index[v] = {"pattern": pid, "forme": [dataset[v]["forme"].get(p) for p in PERSONS]}
 
-    # Allocate marks per hue, biggest pattern first, so the shapes you meet
-    # most often are the simplest ones.
-    for colour in (NEGRE, GROC, VERMELL, BLAU):
-        pool = mark_sequence(colour)
+    # Shades go to the biggest patterns first, so the tones you meet most
+    # often are the clearest ones.
+    for family, shades in SHADES.items():
+        # Size first, then usefulness: between two patterns of equal weight the
+        # tone goes to the one built on a verb you actually meet.
         members = sorted(
-            (p for p in patterns if p["colore"] == colour),
-            key=lambda p: -p["n_verbi"],
+            (p for p in patterns if p["famiglia"] == family),
+            key=lambda p: (-p["n_verbi"], RANK.get(p["esempio"], 10_000)),
         )
-        i = 0
-        for p in members:
-            if p["famiglia"] == "regular-1":
-                p["forma"], p["pieno"] = RESERVED
-                continue
-            if i < len(pool):
-                p["forma"], p["pieno"] = pool[i]
-                i += 1
-            else:
-                p["forma"], p["pieno"] = TAIL, False
+        # The square carries the subtype; the coloured ending carries only the
+        # family. Three shades of yellow darkened for text all land on the same
+        # olive, so claiming otherwise would be false precision.
+        family_text = readable(shades[0])
+        for rank, p in enumerate(members):
+            p["colore"] = shade_for(family, rank)
+            p["text"] = family_text
+            if rank >= len(shades):
                 p["cas_a_part"] = True
+
+    for p in patterns:
+        if p["famiglia"] == "irregolare":
+            base = p["esempio"] if p["esempio"] in RAINBOW else None
+            if base is None:
+                base = next(
+                    (v for v in p["verbi"] if v in RAINBOW), None
+                )
+            p["colore"] = RAINBOW.get(base or "", NEGRE)
+            p["text"] = readable(p["colore"])
 
     (OUT / "patterns.json").write_text(json.dumps(patterns, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUT / "verbs.json").write_text(json.dumps(verb_index, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -194,18 +223,19 @@ def main() -> None:
     for fam, n in by_family.most_common():
         print(f"  {fam:14s} {n:5d}  {100*n/total:5.1f}%")
 
-    # A mark must never repeat: colour+shape+fill is the whole identity.
-    marks = collections.Counter((p["colore"], p["forma"], p["pieno"]) for p in patterns)
-    clashes = {m: n for m, n in marks.items() if n > 1}
-    print(f"\nsegni distinti: {len(marks)} su {len(patterns)} pattern")
-    if clashes:
-        print("segni ripetuti (distinti solo dal nome):")
-        for (col, shape, fill), n in sorted(clashes.items(), key=lambda kv: -kv[1]):
-            print(f"  {col} {shape:9s} {'ple' if fill else 'buit':5s} ×{n}")
+    # A tone may repeat only in the declared tail, never among the big patterns.
+    tones = collections.Counter(p["colore"] for p in patterns)
+    shared = {c: n for c, n in tones.items() if n > 1}
+    print(f"\ntoni distinti: {len(tones)} su {len(patterns)} pattern")
+    if shared:
+        print("toni condivisi (distinti dal nome):")
+        for col, n in sorted(shared.items(), key=lambda kv: -kv[1]):
+            tail = [p for p in patterns if p["colore"] == col and p.get("cas_a_part")]
+            print(f"  {col} x{n}  ({sum(p['n_verbi'] for p in tail)} verbi in coda)")
 
     print("\ntop 12:")
     for p in patterns[:12]:
-        print(f"  {p['colore']} {p['forma']:9s} {'ple' if p['pieno'] else 'buit':5s} "
+        print(f"  {p['colore']} {'buit' if p['buit'] else 'ple '} "
               f"{p['n_verbi']:5d}  {p['esempio']:12s} "
               f"{' '.join(f or '—' for f in p['forme_esempio'])}")
 

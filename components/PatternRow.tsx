@@ -36,7 +36,9 @@ export default function PatternRow({
                 {f ? (
                   <>
                     {stem}
-                    <span style={{ color: colour(pattern.colore) }}>{end}</span>
+                    <span className="tone" style={{ color: colour(pattern.text) }}>
+                        {end}
+                      </span>
                   </>
                 ) : (
                   "—"

@@ -21,14 +21,14 @@ const BLURB: Record<Family, string> = {
   "regular-1":
     "Dos verbs de cada tres. El senyal és buit perquè no hi ha res a recordar: preneu la rel i afegiu-hi les terminacions.",
   "ortho-1":
-    "El mateix mecanisme que la regular. Només canvia la grafia davant de e, perquè el so es manté: j→g, c→qu, g→gu, ç→c. La forma del senyal diu quin canvi toca.",
+    "El mateix mecanisme que la regular. Només canvia la grafia davant de e, perquè el so es manté: j→g, c→qu, g→gu, ç→c. Cada canvi té el seu to de groc.",
   segona:
     "El terreny irregular. La rel canvia entre el singular i el plural, i sovint apareix una -c a la primera persona: bec però bevem, trec però traiem.",
   "incoativa-3":
     "Hi entra l'infix -eix- a les quatre formes fortes, i desapareix a nosaltres i vosaltres. És el grup gran de la tercera.",
   "pura-3": "Sense infix: la rel es queda nua a totes sis.",
   irregolare:
-    "Deu verbs que no responen a cap regla i s'aprenen d'un en un. Senyal negre ple: tot per recordar.",
+    "Deu verbs que no responen a cap regla i s'aprenen d'un en un. Per això cadascun porta el seu color.",
 };
 
 export default function Home() {
@@ -51,22 +51,28 @@ function Explanation({ data }: { data: Dataset }) {
           <br />
           mecanisme
         </h1>
-        <div style={{ marginTop: "var(--s5)" }}>
-          <Cat size={110} />
+        <div className="greeting">
+          <Cat size={132} />
+          <p>
+            Hola, sóc el <b>conju.gat</b>. Et vinc a explicar per què els verbs
+            catalans no són vuit mil coses diferents, sinó una cinquantena de
+            mecanismes amb un color cadascun.
+          </p>
         </div>
       </aside>
 
       <div>
-        <section className="prose" style={{ marginBottom: "var(--s6)" }}>
+        <section style={{ marginBottom: "var(--s6)" }}>
           <p>
             El català té més de vuit mil verbs, però només una cinquantena de
-            maneres de conjugar-los al present. Vuit d&apos;aquestes maneres en
+            maneres de conjugar-los al present.<br/>
+            Vuit d&apos;aquestes maneres en
             cobreixen més del noranta per cent. Si aprens el mecanisme, has
             après tota la família de cop.
           </p>
           <p>
             Cada mecanisme porta un senyal, i el senyal diu dues coses alhora:
-            el <b>color</b> és la conjugació, la <b>forma</b> és el subtipus.
+            el <b>to</b> és la conjugació, i com de clar o fosc és, el subtipus.
           </p>
         </section>
 
@@ -74,36 +80,50 @@ function Explanation({ data }: { data: Dataset }) {
           <h2>Com es llegeix un senyal</h2>
           <ul className="reading">
             <li>
-              <span className="swatch" style={{ background: "var(--groc)" }} />
-              <span>
-                <b>Groc</b> — primera conjugació, els verbs en <i>-ar</i>
-              </span>
-            </li>
-            <li>
-              <span className="swatch" style={{ background: "var(--vermell)" }} />
-              <span>
-                <b>Vermell</b> — segona, els verbs en <i>-re</i> i <i>-er</i>
-              </span>
-            </li>
-            <li>
-              <span className="swatch" style={{ background: "var(--blau)" }} />
-              <span>
-                <b>Blau</b> — tercera, els verbs en <i>-ir</i>
-              </span>
-            </li>
-            <li>
               <span className="swatch outline" />
               <span>
-                <b>Buit</b> — la primera regular: res a recordar
+                <b>Buit</b> — la primera conjugació regular. Dos verbs de cada
+                tres: res a recordar.
               </span>
             </li>
             <li>
-              <span className="swatch" style={{ background: "var(--ink)" }} />
+              <span className="swatch" style={{ background: "#F6BE00" }} />
               <span>
-                <b>Negre ple</b> — un dels deu irregulars: tot a recordar
+                <b>Groc</b> — la primera amb canvi de grafia, els verbs en{" "}
+                <i>-ar</i>
+              </span>
+            </li>
+            <li>
+              <span className="swatch" style={{ background: "#D8232A" }} />
+              <span>
+                <b>Vermell</b> — la segona, els verbs en <i>-re</i> i <i>-er</i>
+              </span>
+            </li>
+            <li>
+              <span className="swatch" style={{ background: "#1B3FBB" }} />
+              <span>
+                <b>Blau</b> — la tercera incoativa, la dels verbs amb{" "}
+                <i>-eix-</i>
+              </span>
+            </li>
+            <li>
+              <span className="swatch" style={{ background: "#0E8A7D" }} />
+              <span>
+                <b>Verd aigua</b> — la tercera pura, sense infix
+              </span>
+            </li>
+            <li>
+              <span className="rainbow" />
+              <span>
+                <b>Un to propi</b> — cadascun dels deu irregulars
               </span>
             </li>
           </ul>
+          <p className="muted" style={{ marginTop: "var(--s3)", maxWidth: "58ch" }}>
+            Dins de cada conjugació, els tons més clars i més foscos separen els
+            subtipus. Els patrons més rars comparteixen el to de base i es
+            distingeixen pel nom.
+          </p>
         </section>
 
         <section style={{ marginBottom: "var(--s6)" }}>
@@ -130,7 +150,16 @@ function Explanation({ data }: { data: Dataset }) {
             return (
               <details key={fam} className="family">
                 <summary>
-                  <Mark pattern={members[0]} size={13} />
+                  {/* The ten irregulars share no tone, so the family stands
+                      for all of them at once — same swatch as the legend. */}
+                  {fam === "irregolare" ? (
+                    <span
+                      className="rainbow"
+                      style={{ width: 13, height: 13 }}
+                    />
+                  ) : (
+                    <Mark pattern={members[0]} size={13} />
+                  )}
                   <span className="fam-name">{FAMILY_LABEL[fam]}</span>
                   <span className="fam-n">
                     {n.toLocaleString("ca")} verbs · {members.length}{" "}
