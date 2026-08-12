@@ -723,22 +723,6 @@ table.paradigm-full td {
   min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
-  /* A hard clip mid-word ("dig|ues-ho") reads as broken; fade the edge
-     instead so a cut-off link reads as "more here", not as a bug. */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    black var(--s2),
-    black calc(100% - var(--s2)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black var(--s2),
-    black calc(100% - var(--s2)),
-    transparent
-  );
 }
 
 .navlinks::-webkit-scrollbar {
