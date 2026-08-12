@@ -1,13 +1,13 @@
 {
-  "name": "conju.gat — coniugazioni catalane a colori",
+  "name": "conju.gat — conjugacions catalanes",
   "short_name": "conju.gat",
-  "description": "Le coniugazioni catalane con un colore per ogni meccanismo.",
+  "description": "Les conjugacions catalanes amb un senyal per a cada mecanisme.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#faf9f7",
   "theme_color": "#faf9f7",
-  "lang": "it",
+  "lang": "ca",
   "categories": ["education"],
   "icons": [
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },

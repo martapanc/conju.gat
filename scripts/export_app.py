@@ -58,7 +58,7 @@ def main() -> None:
         path.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         print(f"{path.relative_to(ROOT)}  {path.stat().st_size / 1024:.0f} KB")
 
-    print(f"\n{len(compact)} verbi, {len(slim)} pattern, mazzo di {len(ordered)} verbi comuni")
+    print(f"\n{len(compact)} verbs, {len(slim)} patterns, deck of {len(ordered)} common verbs")
 
 
 if __name__ == "__main__":

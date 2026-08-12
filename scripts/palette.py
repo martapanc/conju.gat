@@ -219,19 +219,19 @@ def main() -> None:
     by_family = collections.Counter()
     for p in patterns:
         by_family[p["famiglia"]] += p["n_verbi"]
-    print(f"{len(patterns)} pattern, {total} verbi\n")
+    print(f"{len(patterns)} patterns, {total} verbs\n")
     for fam, n in by_family.most_common():
         print(f"  {fam:14s} {n:5d}  {100*n/total:5.1f}%")
 
     # A tone may repeat only in the declared tail, never among the big patterns.
     tones = collections.Counter(p["colore"] for p in patterns)
     shared = {c: n for c, n in tones.items() if n > 1}
-    print(f"\ntoni distinti: {len(tones)} su {len(patterns)} pattern")
+    print(f"\ndistinct tones: {len(tones)} of {len(patterns)} patterns")
     if shared:
-        print("toni condivisi (distinti dal nome):")
+        print("shared tones (distinguished by name):")
         for col, n in sorted(shared.items(), key=lambda kv: -kv[1]):
             tail = [p for p in patterns if p["colore"] == col and p.get("cas_a_part")]
-            print(f"  {col} x{n}  ({sum(p['n_verbi'] for p in tail)} verbi in coda)")
+            print(f"  {col} x{n}  ({sum(p['n_verbi'] for p in tail)} verbs in tail)")
 
     print("\ntop 12:")
     for p in patterns[:12]:

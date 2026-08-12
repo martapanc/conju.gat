@@ -231,7 +231,7 @@ def main() -> None:
 
     # ---- clustering: the signature is the tuple of endings after the common radical
     def signature(forms: dict[str, str]) -> tuple[str, ...]:
-        vals = [forms.get(p) or "·" for p in PERSONS]  # · = cella difettiva (caler)
+        vals = [forms.get(p) or "·" for p in PERSONS]  # · = defective cell (caler)
         n = 0
         while n < min(len(v) for v in vals) and len({v[: n + 1] for v in vals}) == 1:
             n += 1
@@ -253,10 +253,10 @@ def main() -> None:
 
     ranked = sorted(clusters.items(), key=lambda kv: -size(kv[1]))
     merged = sum(1 for _, variants in ranked if len(variants) > 1)
-    print(f"verbi nel dataset : {len(dataset)}")
-    print(f"cluster di presente: {len(ranked)}  (di cui {merged} con varianti d'accento)")
+    print(f"verbs in dataset : {len(dataset)}")
+    print(f"present clusters: {len(ranked)}  ({merged} of which have accent variants)")
     print()
-    print("=== cluster (>=3 verbi) ===")
+    print("=== clusters (>=3 verbs) ===")
     cum = 0
     for key, variants in ranked:
         n = size(variants)
@@ -265,13 +265,13 @@ def main() -> None:
         cum += n
         members = [v for vs in variants.values() for v in vs]
         example = sorted(members, key=len)[0]
-        flag = f"  [{len(variants)} varianti]" if len(variants) > 1 else ""
+        flag = f"  [{len(variants)} variants]" if len(variants) > 1 else ""
         print(f"{n:5d} ({100*n/len(dataset):5.2f}%) cum {100*cum/len(dataset):5.1f}%  "
-              f"{'-'.join(key):38s} es. {example}{flag}")
+              f"{'-'.join(key):38s} e.g. {example}{flag}")
     tail = sum(size(v) for _, v in ranked if size(v) < 3)
-    print(f"\ncoda (cluster con 1-2 verbi): {tail} verbi in {sum(1 for _, v in ranked if size(v) < 3)} cluster")
+    print(f"\ntail (clusters with 1-2 verbs): {tail} verbs in {sum(1 for _, v in ranked if size(v) < 3)} clusters")
     print()
-    print("statistiche:", dict(stats))
+    print("stats:", dict(stats))
 
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "present.json").write_text(json.dumps(dataset, ensure_ascii=False, indent=1), encoding="utf-8")

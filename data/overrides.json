@@ -1,5 +1,5 @@
 {
-  "_nota": "Correzioni al dataset verbecc, catalano centrale. Tre meccanismi: 'templates' definisce nuovi pattern (convenzione Verbiste: '-' iniziale = togli un carattere dalla radice), 'assign' rimappa un verbo a un template, 'forms' impone le forme esplicite.",
+  "_note": "Corrections to the verbecc dataset, central Catalan. Three mechanisms: 'templates' defines new patterns (Verbiste convention: leading '-' = strip a character from the stem), 'assign' remaps a verb to a template, 'forms' forces explicit forms.",
 
   "templates": {
     "prendre-compost": {

@@ -77,14 +77,14 @@ def main() -> None:
             ok[inf] = forms
 
     total = len(ok) + len(bad)
-    print(f"verbi valutabili        : {total}")
-    print(f"  interamente corretti  : {len(ok)} ({100*len(ok)/total:.2f}%)")
-    print(f"  con almeno un errore  : {len(bad)} ({100*len(bad)/total:.2f}%)")
-    print(f"  non in Softcatala     : {len(unknown)} (non valutati)")
+    print(f"verbs evaluated          : {total}")
+    print(f"  fully correct          : {len(ok)} ({100*len(ok)/total:.2f}%)")
+    print(f"  with at least one error: {len(bad)} ({100*len(bad)/total:.2f}%)")
+    print(f"  not in Softcatala      : {len(unknown)} (not evaluated)")
     print()
-    print("errori per cella:", dict(per_cell_fail))
+    print("errors per cell:", dict(per_cell_fail))
     print()
-    print("=== template piu problematici (falliti/totali) ===")
+    print("=== most problematic templates (failed/total) ===")
     for name, n in fail_by_template.most_common(15):
         print(f"  {name:16s} {n:5d} / {total_by_template[name]:5d}")
 

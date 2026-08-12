@@ -1,146 +1,151 @@
 # conju.gat 🐱
 
-Le coniugazioni catalane con **un segno per ogni meccanismo di coniugazione**.
+*[Llegeix-ho en català](README.ca.md)*
 
-L'idea: i verbi catalani sono migliaia, ma i *pattern* con cui si coniugano sono
-poche decine. Se impari il segno, hai imparato tutta la famiglia — non un verbo
-alla volta.
+Catalan conjugations with **a sign for every conjugation mechanism**.
 
-Attualmente copre il **presente d'indicatiu**. L'interfaccia è in catalano.
+The idea: there are thousands of Catalan verbs, but only a few dozen *patterns*
+by which they conjugate. Learn the sign, and you've learned the whole family —
+not one verb at a time.
+
+Currently covers the **present indicative**. The interface is in Catalan.
 
 ---
 
-## Come funziona il segno
+## How the sign works
 
-Il linguaggio visivo è Miró dentro una tavola di paradigmi: giallo, rosso e blu
-primari più il nero, colore piatto, linea nera, nessun raggio di curvatura.
-Tre primari non bastano però a distinguere 51 pattern, quindi il segno porta
-**due** informazioni:
+The visual language is Miró inside a table of paradigms: primary yellow, red
+and blue plus black, flat colour, black line, no curvature stroke. Three
+primaries aren't enough to distinguish 51 patterns, though, so the sign
+carries **two** pieces of information:
 
-- il **colore** dice di quale coniugazione è il meccanismo;
-- la **forma** (cerchio, quadrato, triangolo, rombo, croce, stella, mezzaluna,
-  piena o vuota) dice quale sottotipo.
+- **colour** says which conjugation the mechanism belongs to;
+- **shape** (circle, square, triangle, diamond, cross, star, crescent, filled
+  or hollow) says which subtype.
 
-| famiglia | segno | copertura | esempio |
+| family | sign | coverage | example |
 | --- | --- | --- | --- |
-| 1a regolare | quadrato nero **vuoto** | 64,0% | `parlar` → parl**o**, parl**es** |
-| 1a con alternanza ortografica | **giallo**, forma per innesco | 22,5% | `viatjar` → viat**jo**, viat**ges** |
-| 2a coniugazione | **rosso** | 2,9% | `perdre` → perd**o**, perd**s** |
-| 3a incoativa | **blu** cerchio | 9,1% | `servir` → serv**eixo** |
-| 3a pura | **blu** quadrato | 0,6% | `dormir` → dorm**o** |
-| irregolari | nero **pieno**, uno per verbo | 0,9% | `ser`, `anar`, `fer`, `tenir`… |
+| 1st regular | **hollow** black square | 64.0% | `parlar` → parl**o**, parl**es** |
+| 1st with spelling shift | **yellow**, shape per trigger | 22.5% | `viatjar` → viat**jo**, viat**ges** |
+| 2nd conjugation | **red** | 2.9% | `perdre` → perd**o**, perd**s** |
+| 3rd inchoative | **blue** circle | 9.1% | `servir` → serv**eixo** |
+| 3rd pure | **blue** square | 0.6% | `dormir` → dorm**o** |
+| irregular | **filled** black, one per verb | 0.9% | `ser`, `anar`, `fer`, `tenir`… |
 
-Tre principi, decisi prima di scrivere il codice:
+Three principles, decided before writing any code:
 
-1. **La classe enorme e regolare non prende colore.** Il 64% dei verbi porta un
-   quadrato nero vuoto: vuoto vuol dire "niente da ricordare". Il nero pieno,
-   all'opposto, vuol dire "tutto da ricordare" ed è riservato ai dieci
-   irregolari. Le due letture non si riusano mai per altro.
-2. **Colore per il meccanismo, forma per l'innesco.** Le alternanze ortografiche
-   della 1a (`j→g`, `c→qu`, `g→gu`, `ç→c`) sono lo stesso meccanismo: stesso
-   giallo, forme diverse. La forma sopravvive al daltonismo e alla fotocopia,
-   cosa che le sfumature non facevano.
-3. **Mai il segno da solo.** Ogni pattern porta anche il nome per esteso.
+1. **The huge, regular class gets no colour.** 64% of verbs carry a hollow
+   black square: hollow means "nothing to remember." Filled black, at the
+   opposite end, means "everything to remember" and is reserved for the ten
+   irregulars. Neither reading is ever reused for anything else.
+2. **Colour for the mechanism, shape for the trigger.** The 1st-conjugation
+   spelling shifts (`j→g`, `c→qu`, `g→gu`, `ç→c`) are the same mechanism: same
+   yellow, different shapes. Shape survives colour blindness and photocopying,
+   which shade differences did not.
+3. **Never the sign alone.** Every pattern also carries the name in full.
 
-Sette forme per due riempimenti danno 14 segni per tinta: 46 dei 51 pattern
-hanno un segno unico. Gli 11 verbi che restano (`néixer`, `dur`, `caldre`,
-`caler`, `heure`, `pudir`, `tossir`) condividono una barra vuota dichiarata,
-`cas a part`: una collisione silenziosa sarebbe un bug, una dichiarata è una
-categoria.
+Seven shapes across two fills give 14 signs per hue: 46 of the 51 patterns
+have a unique sign. The 11 remaining verbs (`néixer`, `dur`, `caldre`,
+`caler`, `heure`, `pudir`, `tossir`) share a declared hollow bar, `cas a
+part`: a silent collision would be a bug, a declared one is a category.
 
-I verbi che differiscono **solo per l'accento** (`fer`/`refer`, `cosir`/`descosir`)
-stanno nello stesso pattern: sono lo stesso meccanismo con un prefisso che sposta
-l'accento. Le grafie esatte restano registrate come *varianti* dentro il pattern,
-perché nell'esercizio scritto l'accento va comunque azzeccato.
+Verbs that differ **only by accent** (`fer`/`refer`, `cosir`/`descosir`)
+stay in the same pattern: they're the same mechanism with a prefix that
+shifts the stress. Exact spellings are still recorded as *variants* within
+the pattern, because in the writing exercise the accent still has to be
+right.
 
-## Le modalità
+## The modes
 
-L'esercizio è a schermo intero, una cella alla volta, senza navigazione: sopra la
-persona richiesta, sotto il paradigma che si costruisce riga per riga. Le sei
-persone stanno sempre nello stesso ordine e nella stessa posizione, perché la
-memoria spaziale è parte dell'apprendimento.
+The exercise is full-screen, one cell at a time, no navigation: above, the
+requested person; below, the paradigm being built row by row. The six
+persons always stay in the same order and position, because spatial memory
+is part of learning.
 
-- **Consulta** — cerchi un verbo e ne vedi il paradigma, con gli altri verbi che
-  seguono lo stesso meccanismo.
-- **Digues-ho** — coniughi ad alta voce, riveli cella per cella e ti valuti alla
-  fine del paradigma.
-- **Escriu-ho** — scrivi le sei forme. Gli accenti contano: il confronto perdona
-  solo maiuscole e spazi, e c'è una barra con `à è é í ï ò ó ú ü ç l·l`.
+- **Consulta** — look up a verb and see its paradigm, along with other verbs
+  that follow the same mechanism.
+- **Digues-ho** — conjugate out loud, reveal cell by cell, and self-assess
+  at the end of the paradigm.
+- **Escriu-ho** — write the six forms. Accents count: the comparison
+  forgives only case and spacing, and there's a bar with
+  `à è é í ï ò ó ú ü ç l·l`.
 
-La pista del colore si spegne dalle impostazioni quando non serve più.
+The colour hint can be switched off in settings once it's no longer needed.
 
-### Tipografia
+### Typography
 
-Bricolage Grotesque per il display, Inter Tight per il testo, Fragment Mono per
-le etichette grammaticali e le forme. Auto-ospitati via `next/font`, quindi la
-PWA mantiene la sua tipografia anche offline. Tutti e tre rendono correttamente
-la ela geminada (`col·legi`, `instal·lar`): è un requisito bloccante, verificato
-a mano e non dedotto dalla scheda del font.
+Bricolage Grotesque for display, Inter Tight for body text, Fragment Mono for
+grammatical labels and forms. Self-hosted via `next/font`, so the PWA keeps
+its typography offline too. All three render the geminated l (`col·legi`,
+`instal·lar`) correctly: that's a hard requirement, checked by hand and not
+assumed from the font's spec sheet.
 
-Il mazzo dà priorità ai verbi che sbagli più spesso. I progressi restano nel
-browser (`localStorage`), non esce nulla dal dispositivo.
+The deck prioritises the verbs you get wrong most often. Progress stays in
+the browser (`localStorage`) — nothing leaves the device.
 
-## Sviluppo
+## Development
 
 ```bash
 npm install
-npm run data:fetch   # scarica i dizionari a monte (una volta sola)
-npm run data         # ricostruisce il dataset
+npm run data:fetch   # download the upstream dictionaries (once)
+npm run data         # rebuild the dataset
 npm run dev          # http://localhost:3341
 ```
 
-Il campionario completo dei 51 pattern con i rispettivi segni è la pagina
-**Patrons** dentro l'app: si genera dai dati, quindi non può andare fuori sync.
+The full set of 51 patterns with their signs is the **Patrons** page inside
+the app: it's generated from the data, so it can't go out of sync.
 
-### La pipeline dei dati
+### The data pipeline
 
 ```
-verbecc (template)  ─┐
-                     ├─→ build.py ──→ palette.py ──→ export_app.py ──→ public/data/
-Softcatalà (verità) ─┘   genera e      assegna i      formato app
-                         valida        segni 
+verbecc (templates)  ─┐
+                      ├─→ build.py ──→ palette.py ──→ export_app.py ──→ public/data/
+Softcatalà (truth)   ─┘   generates &    assigns       app format
+                          validates      signs
 ```
 
-I template di verbecc generano le forme; ogni forma viene poi **verificata
-contro il dizionario Softcatalà**. Dove i due divergono:
+verbecc's templates generate the forms; every form is then **checked against
+the Softcatalà dictionary**. Where the two diverge:
 
-- **differenza di solo accento** → si adotta Softcatalà (291 celle corrette);
-- **variante dialettale** → si sceglie il catalano centrale con regole esplicite
-  (81 celle: si scartano valenzano e baleare);
-- **template sbagliato** → correzione in `data/overrides.json`.
+- **accent-only difference** → Softcatalà wins (291 cells corrected);
+- **dialectal variant** → central Catalan is chosen with explicit rules
+  (81 cells: Valencian and Balearic forms are dropped);
+- **wrong template** → fixed in `data/overrides.json`.
 
-`overrides.json` è il file da toccare per correggere un verbo. Ha tre
-meccanismi: `templates` definisce nuovi pattern, `assign` rimappa un verbo a un
-template, `forms` impone le forme esplicite. Quasi tutte le correzioni sono state
-fatte per *famiglia* (i composti di `prendre`, `treure`, `néixer`, `empènyer`,
-`tòrcer`), non verbo per verbo.
+`overrides.json` is the file to touch to fix a verb. It has three
+mechanisms: `templates` defines new patterns, `assign` remaps a verb to a
+template, `forms` forces explicit forms. Almost all corrections were made by
+*family* (the compounds of `prendre`, `treure`, `néixer`, `empènyer`,
+`tòrcer`), not verb by verb.
 
-Stato attuale: **8.582 verbi, 51 pattern, 0 forme non verificate.**
+Current state: **8,582 verbs, 51 patterns, 0 unverified forms.**
 
-### Perché serve la verifica
+### Why the verification matters
 
-I dati a monte contengono errori proprio sui verbi frequenti. `saber` e `voler`
-erano mappati sul template `perd:re`, che pretende un infinito in *-re*: non
-producevano forme sbagliate, sparivano in silenzio. In tutto 29 verbi avevano un
-template strutturalmente inapplicabile, fra cui `ser`, `ésser`, `néixer`,
-`desfer`, `tòrcer`. Per un'app di studio insegnare forme sbagliate è il bug
-peggiore possibile, quindi la validazione non è opzionale.
+The upstream data has errors precisely on the frequent verbs. `saber` and
+`voler` were mapped to the `perd:re` template, which assumes an infinitive
+ending in *-re*: it didn't produce wrong forms, it silently dropped them
+entirely. In total, 29 verbs had a structurally inapplicable template,
+including `ser`, `ésser`, `néixer`, `desfer`, `tòrcer`. For a study app,
+teaching the wrong forms is the worst possible bug, so validation isn't
+optional.
 
-## Licenze e attribuzione
+## Licensing and attribution
 
-Il dataset deriva da due fonti copyleft, entrambe scaricate a build time e non
-incluse nel repository:
+The dataset derives from two copyleft sources, both downloaded at build time
+and not vendored in the repository:
 
-- [**verbecc**](https://github.com/bretttolbert/verbecc) — template di
-  coniugazione in formato Verbiste. Dati GPL-2.0, di Brett Tolbert e
+- [**verbecc**](https://github.com/bretttolbert/verbecc) — conjugation
+  templates in Verbiste format. GPL-2.0 data, by Brett Tolbert and
   Pierre Sarrazin.
 - [**Softcatalà catalan-dictionary**](https://huggingface.co/datasets/softcatala/catalan-dictionary)
-  — 1,18 milioni di forme flesse con lemma e tag morfologico. GPL-2.0 / LGPL-2.1.
+  — 1.18 million inflected forms with lemma and morphological tag.
+  GPL-2.0 / LGPL-2.1.
 
-Di conseguenza **il dataset derivato in `public/data/` è GPL-2.0**. Se distribuisci
-l'app, mantieni l'attribuzione e la licenza sui dati.
+As a result, **the derived dataset in `public/data/` is GPL-2.0**. If you
+distribute the app, keep the attribution and the data licence.
 
-Varietà linguistica: **catalano centrale**.
+Language variety: **central Catalan**.
 
-Il sito [verbs.cat](https://www.verbs.cat/) non è stato usato come fonte di dati:
-è il progetto che ha ispirato questo, e merita una visita.
+The site [verbs.cat](https://www.verbs.cat/) was not used as a data source:
+it's the project that inspired this one, and it's worth a visit.

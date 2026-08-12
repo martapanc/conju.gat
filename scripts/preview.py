@@ -11,18 +11,18 @@ OUT = ROOT / "data" / "out"
 PERSONS = ("jo", "tu", "ell/ella", "nosaltres", "vosaltres", "ells/elles")
 
 FAMILY_ORDER = [
-    ("regular-1", "1a coniugazione regolare", "Grigio: è la base. Se non è colorato, non c'è niente da ricordare."),
-    ("ortho-1", "1a coniugazione, alternanza ortografica", "Ambra. Stesso meccanismo della regolare — cambia solo la grafia davanti a <i>e</i>: <i>j→g</i>, <i>c→qu</i>, <i>g→gu</i>, <i>ç→c</i>. Stessa tinta, intensità diverse."),
-    ("segona", "2a coniugazione", "Rosso: il territorio irregolare, dove la radice cambia fra singolare e plurale."),
-    ("incoativa-3", "3a coniugazione incoativa", "Verde acqua. L'infisso <i>-eix-</i> nelle quattro forme forti, e sparisce in <i>nosaltres</i>/<i>vosaltres</i>."),
-    ("pura-3", "3a coniugazione pura", "Blu: niente infisso, la radice resta nuda."),
-    ("irregolare", "Irregolari da sapere a memoria", "Dieci verbi che non rispondono a nessuna regola. Ognuno ha un colore proprio."),
+    ("regular-1", "1st regular conjugation", "Grey: it's the baseline. If it's not coloured, there's nothing to remember."),
+    ("ortho-1", "1st conjugation, spelling shift", "Amber. Same mechanism as the regular one — only the spelling before <i>e</i> changes: <i>j→g</i>, <i>c→qu</i>, <i>g→gu</i>, <i>ç→c</i>. Same hue, different intensities."),
+    ("segona", "2nd conjugation", "Red: irregular territory, where the stem changes between singular and plural."),
+    ("incoativa-3", "3rd conjugation, inchoative", "Teal. The <i>-eix-</i> infix in the four strong forms, disappearing in <i>nosaltres</i>/<i>vosaltres</i>."),
+    ("pura-3", "3rd conjugation, pure", "Blue: no infix, the stem stays bare."),
+    ("irregolare", "Irregulars to learn by heart", "Ten verbs that follow no rule. Each one has its own colour."),
 ]
 
 PAIRS = [
-    ("menjar", "passejar", "Stesso pattern, identico in tutte e sei le celle."),
-    ("llegir", "vestir", "Stesso pattern: entrambi incoativi."),
-    ("beure", "treure", "Quattro celle su sei coincidono. Divergono in <i>nosaltres</i> e <i>vosaltres</i> — dove il catalano nasconde le sue irregolarità."),
+    ("menjar", "passejar", "Same pattern, identical across all six cells."),
+    ("llegir", "vestir", "Same pattern: both inchoative."),
+    ("beure", "treure", "Four cells out of six match. They diverge in <i>nosaltres</i> and <i>vosaltres</i> — where Catalan hides its irregularities."),
 ]
 
 
@@ -64,7 +64,7 @@ def main() -> None:
     # ---- coverage bar
     bar = "".join(
         f'<span class="seg" style="flex:{fam_totals[f]};background:{by_id_family_color(patterns, f)}" '
-        f'title="{html.escape(label)}: {fam_totals[f]} verbi"></span>'
+        f'title="{html.escape(label)}: {fam_totals[f]} verbs"></span>'
         for f, label, _ in FAMILY_ORDER
         if fam_totals.get(f)
     )
@@ -81,7 +81,7 @@ def main() -> None:
                 f'<span class="forms">{cells(verbs[v]["forme"], p["signature"], p["colore"])}</span></div>'
             )
         same = verbs[a]["pattern"] == verbs[b]["pattern"]
-        badge = "stesso pattern" if same else "pattern diversi"
+        badge = "same pattern" if same else "different patterns"
         pair_html.append(
             f'<article class="pair"><header><h3>{html.escape(a)} <span class="vs">·</span> {html.escape(b)}</h3>'
             f'<span class="badge {"same" if same else "diff"}">{badge}</span></header>'
@@ -106,8 +106,8 @@ def main() -> None:
                     for v in p["varianti"]
                 )
                 variants = (
-                    f'<div class="variants"><span class="vlabel">stesso meccanismo, '
-                    f"accento diverso</span>{vrows}</div>"
+                    f'<div class="variants"><span class="vlabel">same mechanism, '
+                    f"different accent</span>{vrows}</div>"
                 )
             rows.append(
                 f'<li class="pattern">'
@@ -120,7 +120,7 @@ def main() -> None:
             )
         fam_html.append(
             f'<section class="family"><header><h2>{html.escape(label)}</h2>'
-            f'<span class="famcount">{fam_totals[fam]} verbi · {100*fam_totals[fam]/total:.1f}%</span></header>'
+            f'<span class="famcount">{fam_totals[fam]} verbs · {100*fam_totals[fam]/total:.1f}%</span></header>'
             f'<p class="blurb">{blurb}</p><ol class="patterns">{"".join(rows)}</ol></section>'
         )
 
@@ -133,7 +133,7 @@ def main() -> None:
         families="".join(fam_html),
     )
     (ROOT / "preview.html").write_text(page, encoding="utf-8")
-    print(f"scritto preview.html — {total} verbi, {len(patterns)} pattern")
+    print(f"wrote preview.html — {total} verbs, {len(patterns)} patterns")
 
 
 def by_id_family_color(patterns: list, fam: str) -> str:
@@ -143,7 +143,7 @@ def by_id_family_color(patterns: list, fam: str) -> str:
     return "#999"
 
 
-TEMPLATE = """<title>conju.gat · campionario dei pattern</title>
+TEMPLATE = """<title>conju.gat · pattern specimen sheet</title>
 <style>
   :root {{
     --paper: #FAF9F7; --card: #FFFFFF; --ink: #1B1B1E; --muted: #6F6E72;
@@ -253,35 +253,35 @@ TEMPLATE = """<title>conju.gat · campionario dei pattern</title>
 </style>
 
 <div class="wrap">
-  <p class="eyebrow">conju.gat · present d'indicatiu</p>
-  <h1>Il colore è il meccanismo,<br>non il verbo</h1>
+  <p class="eyebrow">conju.gat · present indicative</p>
+  <h1>Colour is the mechanism,<br>not the verb</h1>
   <p class="lede">
-    Ogni pattern di coniugazione ha una tinta. La parte <b>colorata</b> di ogni forma è
-    ciò che il pattern determina; la parte grigia è la radice, che resta tua.
-    Dataset costruito dai template <b>verbecc</b> e validato forma per forma contro il
-    dizionario <b>Softcatalà</b>, in catalano centrale.
+    Every conjugation pattern has a hue. The <b>coloured</b> part of each form is
+    what the pattern determines; the grey part is the stem, which stays yours.
+    Dataset built from <b>verbecc</b> templates and validated form by form against the
+    <b>Softcatalà</b> dictionary, in central Catalan.
   </p>
 
   <div class="stats">
-    <div class="stat"><b>{total}</b><span>verbi</span></div>
-    <div class="stat"><b>{npatterns}</b><span>pattern distinti</span></div>
-    <div class="stat"><b>8</b><span>colori per il 96%</span></div>
-    <div class="stat"><b>0</b><span>forme non verificate</span></div>
+    <div class="stat"><b>{total}</b><span>verbs</span></div>
+    <div class="stat"><b>{npatterns}</b><span>distinct patterns</span></div>
+    <div class="stat"><b>8</b><span>colours cover 96%</span></div>
+    <div class="stat"><b>0</b><span>unverified forms</span></div>
   </div>
 
   <div class="bar">{bar}</div>
-  <p class="barcap">Distribuzione reale dei verbi fra le famiglie. La prima fascia, grigia, è la 1a regolare.</p>
+  <p class="barcap">Actual distribution of verbs across families. The first band, grey, is the 1st regular conjugation.</p>
 
-  <h2 style="margin-bottom:1rem">Le tue intuizioni, verificate</h2>
+  <h2 style="margin-bottom:1rem">Your intuitions, verified</h2>
   <div class="pairs">{pairs}</div>
 
   <div class="legend">{persons}</div>
   {families}
 
   <footer>
-    Dati: <a href="https://github.com/bretttolbert/verbecc">verbecc</a> (template, GPL-2.0) e
+    Data: <a href="https://github.com/bretttolbert/verbecc">verbecc</a> (templates, GPL-2.0) and
     <a href="https://huggingface.co/datasets/softcatala/catalan-dictionary">Softcatalà catalan-dictionary</a>
-    (verità di riferimento, GPL-2.0 / LGPL-2.1). Varietà: catalano centrale.
+    (reference truth, GPL-2.0 / LGPL-2.1). Variety: central Catalan.
   </footer>
 </div>
 """
